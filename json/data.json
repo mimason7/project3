@@ -1,0 +1,34 @@
+{
+    "playlist" : [
+        {
+            "src" : "JadesPlace.mp3",
+            "title" : "Jade's Place",
+            "artist" : "Destrage"
+        },
+        {
+            "src" : "TheDawnOfBattle.mp3",
+            "title" : "The Dawn of Battle",
+            "artist" : "Manowar"
+        },
+        {
+            "src" : "TifaTheme.mp3",
+            "title" : "Tifa's Theme",
+            "artist" : "Nobuo Uematsu"
+        },
+        {
+            "src" : "Insane.mp3",
+            "title" : "Insane",
+            "artist" : "The Arkhams"
+        },
+        {
+            "src" : "StartWearingPurple.mp3",
+            "title" : "Start Wearing Purple",
+            "artist" : "Gogol Bordello"
+        },
+        {
+            "src" : "OlafLaugh.mp3",
+            "title" : "Olaf",
+            "artist" : "Riot Games"
+        }
+    ]
+}

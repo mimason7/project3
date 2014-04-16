@@ -1,0 +1,201 @@
+<html>
+    
+    <head>
+    
+        <title>Project 3</title>
+        
+        <script src="js/jQuery.min.js"></script>
+    
+    </head>
+
+    <body>
+        
+        <input id="backBtn" type="button" value="Back" disabled="disabled" />
+        <input id="playBtn" type="button" value="Play" />
+        <input id="pauseBtn" type="button" value="Pause" />
+        <input id="stopBtn" type="button" value="Stop" />
+        <input id="nextBtn" type="button" value="Next" />
+        <input id="repeatAll" type="checkbox" checked=true /> Repeat All
+        <input id="shuffle" type="checkbox" />Shuffle
+        
+        <br />
+        
+        <div id="status">
+            Now Playing: 
+        </div>
+            
+        Now Playing: <span id="nowPlaying"></span>
+    
+        <audio id="myAudio" >
+            <source src="" type="audio/mp3" />
+        </audio>
+        
+        <div id="currTime">
+        
+        </div>
+    
+    
+    </body>
+    
+    <script>
+        
+        var audio=document.getElementById("myAudio");
+        var nowPlaying = document.getElementById("nowPlaying");
+        var isPlaying=false;
+        var shuffle=document.getElementById("shuffle");
+        var repeatAll=document.getElementById("repeatAll");
+        var songDuration="";
+        var currentTime="";
+        
+        $(document).ready(function() {
+            $.getJSON("json/data.json", function(data) {
+                var songs=data.playlist;
+                var increment=0;
+                audio.src="music/"+songs[increment].src;
+                playSong();
+            
+            
+                function playSong() {
+                    
+                    if(increment>=songs.length-1){
+                        $("#nextBtn").attr("disabled","disabled");
+                    } else {
+                        $("#nextBtn").removeAttr("disabled");
+                    }
+                    if(increment<1){
+                        $("#backBtn").attr("disabled","disabled");
+                    } else {
+                        $("#backBtn").removeAttr("disabled");
+                    }
+                    isPlaying=true;
+                    $("#status").html("Play");
+                    $(nowPlaying).html(songs[increment].title + " - " + songs[increment].artist);
+                    audio.play();
+                };
+                
+                function pauseSong() {
+                    isPlaying=false;
+                    $("#status").html("Pause");
+                    audio.pause();
+                }
+                
+                function stopSong() {
+                    isPlaying=false;
+                    $("#status").html("Stop");
+                    audio.pause();
+                    audio.currentTime=0;
+                };
+                
+                function nextSong() {
+                    if(shuffle.checked) {
+                        var rand=Math.random()*(songs.length);
+                        //sets rand to two digit number
+                        rand=rand.toFixed(2);
+                        //splits up whole number from decimal in an array
+                        rand=rand.split(".");
+                        
+                        if(rand[0]==0) {
+                            if(rand[1]<50) {
+                                audio.pause();
+                                increment=0;
+                                audio.src="music/"+songs[increment].src;
+                                playSong();
+                            } else {
+                                audio.pause();
+                                increment=1
+                                audio.src="music/"+songs[increment].src;
+                                playSong();
+                            }
+                        } else if (rand[0]==songs.length-1) {
+                            if(rand[1]<50) {
+                                audio.pause();
+                                increment=songs.length-2
+                                audio.src="music/"+songs[increment].src;
+                                playSong()
+                            } else {
+                                audio.pause();
+                                increment=songs.length-1
+                                audio.src="music/"+songs[increment].src;
+                                playSong();
+                            }
+                        } else if(rand[1]>50) {
+                            audio.pause();
+                            increment = parseInt(rand[0])+1
+                            audio.src="music/"+songs[increment].src;
+                            playSong();
+                        } else {
+                            audio.pause();
+                            increment= parseInt(rand[0]);
+                            audio.src="music/"+songs[increment].src;
+                            playSong();
+                        }
+                    } else {
+                        increment++;
+                        audio.pause();
+                        audio.src="music/"+songs[increment].src;
+                        playSong();
+                }
+                };
+                
+                function backSong() {
+                        increment--;
+                        audio.pause();
+                        audio.src="music/"+songs[increment].src;
+                        playSong();
+                };
+                
+                $("#backBtn").click(function() {
+                    backSong();
+                })
+                
+                $("#playBtn").click(function() {
+                    playSong();
+                })
+                
+                $("#pauseBtn").click(function() {
+                    pauseSong();
+                })
+                
+                $("#nextBtn").click(function() {
+                    nextSong();
+                })
+                
+                $("#stopBtn").click(function() {
+                    stopSong();
+                })
+                
+                audio.addEventListener('ended',function(event){
+                    if(increment=songs.length-1){
+                        if(repeatAll.checked==true) {
+                            increment=0;
+                            audio.src="music/"+songs[increment].src;
+                            playSong();
+                        }
+                    } else {
+                        nextSong();
+                    }
+                })
+                
+                audio.addEventListener('loadedmetadata',function(event) {
+                    var length=audio.duration;
+                    var songLength=new Date(length*1000);
+                    var minutes=songLength.getUTCMinutes();
+                    var seconds=("0"+songLength.getSeconds()).slice(-2);
+                    songDuration=minutes+":"+seconds;
+                })
+                
+                audio.addEventListener('timeupdate',function() {
+                    var time=audio.currentTime;
+                    var currTime=new Date(time*1000);
+                    var minutes=currTime.getUTCMinutes();
+                    var seconds=("0"+currTime.getSeconds()).slice(-2);
+                    var display=minutes+":"+seconds;
+                    $("#currTime").html(display+"/"+songDuration)
+                })
+        })
+        })
+    
+    
+    </script>
+
+</html>
